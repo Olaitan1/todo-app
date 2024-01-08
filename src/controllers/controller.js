@@ -40,9 +40,60 @@ const updateTask = async(req, res) => {
     await Task.findByIdAndDelete(taskId)
     
     res.status(200).json({
-    message:'Task completed'
+        message: 'Task completed and has been moved to history'
+        
 })
 }
+const HistoryTasks = async (req, res) => {
+  try {
+    const statusQuery = req.query.status;
+
+    let tasks;
+    if (statusQuery) {
+      // If status query is provided, filter tasks by status
+      tasks = await History.find({ status: statusQuery });
+    } else {
+      // Otherwise, retrieve all tasks
+      tasks = await History.find();
+    }
+
+    res.status(200).json({
+      success: true,
+      data: tasks
+    });
+  } catch (error) {
+    console.error('Error retrieving tasks:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
+const allTasks = async (req, res) => {
+  try {
+    const statusQuery = req.query.status;
+
+    let tasks;
+    if (statusQuery) {
+      // If status query is provided, filter tasks by status
+      tasks = await Task.find({ status: statusQuery });
+    } else {
+      // Otherwise, retrieve all tasks
+      tasks = await Task.find();
+    }
+
+    res.status(200).json({
+      success: true,
+      data: tasks
+    });
+  } catch (error) {
+    console.error('Error retrieving tasks:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Internal server error'
+    });
+  }
+};
 
 cron.schedule('0 0 * * *', async () =>
 {
@@ -64,4 +115,4 @@ cron.schedule('0 0 * * *', async () =>
     }
 })
 
-module.exports = {AddTask,updateTask}
+module.exports = {AddTask,updateTask, allTasks, HistoryTasks}

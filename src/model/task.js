@@ -5,7 +5,8 @@ const taskSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['completed', 'pending']
-    }
+    },
+    createdAt:Date
 });
 
 const Task = mongoose.model('Task', taskSchema);

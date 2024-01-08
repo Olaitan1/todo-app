@@ -1,7 +1,7 @@
 const express = require('express');
 const Task = require('../model/task')
 const History = require('../model/history')
-var moment = require('moment');
+// var moment = require('moment');
 const cron = require('node-cron')
 
 
@@ -10,8 +10,10 @@ const AddTask = async (req, res) =>
     const { description, dueDate } = req.body
     const newTask = new Task({
         description,
-        dueDate: ('currentdate', moment().format(("YYYY-MM-DD"))),
-        status:'pending'
+        dueDate,
+        status: 'pending',
+        createdAt: new Date()
+
     });
     await newTask.save()
 

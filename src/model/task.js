@@ -1,14 +1,29 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
+
 const taskSchema = new mongoose.Schema({
-    description: String,
-    dueDate: Date,
-    status: {
-        type: String,
-        enum: ['completed', 'pending']
+  name: String,
+  priority: {
+    type: String,
+    enum: ["Low", "Medium", "High"],
+  },
+  description: String,
+  dueDate: Date,
+  reminder: {
+    method: {
+      type: String,
+      enum: ["email", "sms"],
     },
-    createdAt:Date
-});
+    date: Date,
+  },
+  status: {
+      type: String,
+      default: "pending",
+    enum: ["completed", "pending"],
+  },
+ 
+},
+{timestamps: true});
 
-const Task = mongoose.model('Task', taskSchema);
+const Task = mongoose.model("Task", taskSchema);
 
-module.exports = Task
+module.exports = Task;

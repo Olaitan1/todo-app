@@ -28,6 +28,10 @@ mongoose.connect(process.env.DB_URL, {
 app.use('/', routes)
 app.use("/users", userRoutes);
 
+app.get("/", (req, res) =>
+{
+    res.send('Welcome to my Todo')
+});
 
 app.listen(PORT, () =>
 {

@@ -11,7 +11,7 @@ const taskSchema = new mongoose.Schema({
   reminder: {
     method: {
       type: String,
-      enum: ["email", "sms"],
+     
     },
     date: Date,
   },

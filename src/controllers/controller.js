@@ -80,6 +80,26 @@ const updateTask = async (req, res) => {
   }
 };
 
+const SingleTask = async (req, res) =>
+{
+  try
+  {
+    const { taskId } = req.params;
+    const task = await Task.findById(taskId);
+ 
+
+    if (!task) {
+      return res.status(404).json({ message: "Task not found" }); 
+    }
+    return res.status(200).json(task);
+  } catch (error)
+  {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+
 const HistoryTasks = async (req, res) => {
   try {
     const statusQuery = req.query.status;
@@ -103,6 +123,8 @@ const HistoryTasks = async (req, res) => {
     });
   }
 };
+
+
 // const allTasks = async (req, res) => {
 //   try {
 //     const statusQuery = req.query.status;
@@ -128,7 +150,10 @@ const HistoryTasks = async (req, res) => {
 //     });
 //   }
 // };
-const allTasks = async (req, res) => {
+
+
+const allTasks = async (req, res) =>
+{
   try {
     const { status, priority } = req.query;
 
@@ -175,4 +200,4 @@ cron.schedule('0 0 * * *', async () =>
     }
 })
 
-module.exports = {AddTask,updateTask, allTasks, HistoryTasks}
+module.exports = {AddTask,updateTask, allTasks,SingleTask, HistoryTasks}

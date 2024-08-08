@@ -191,6 +191,38 @@ const UserLogin = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+const UpdateProfile = async (req, res) =>
+{
+  try
+  {
+    const userId = req.params.id;
+    const { fullName } = req.body;
+    let updateData = {};
+
+    if (fullName)
+    {
+      updateData.fullName = fullName;
+    }
+
+    if (req.file)
+    {
+      updateData.profilePicture = req.file.path; 
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+    if (!updatedUser)
+    {
+      return res.status(404).send({ message: 'User not found' });
+    }
+
+    res.status(200).send(updatedUser);
+  } catch (error)
+  {
+    res.status(500).send({ message: 'Error updating user', error: error.message });
+  }
+}
 const UpdateUserPassword = async (req, res) => {
   try {
     const { adminId } = req.params;
@@ -234,6 +266,7 @@ const UpdateUserPassword = async (req, res) => {
   }
 };
 module.exports = {
+  UpdateProfile,
   RegisterUser,
   ForgotPassword,
   UserLogin,

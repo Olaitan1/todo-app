@@ -99,6 +99,24 @@ const SingleTask = async (req, res) =>
   }
 };
 
+const deleteTask = async (req, res) =>
+{
+  try
+  {
+    const { taskId } = req.params
+    const task = await Task.findByIdAndDelete(taskId);
+    if (!task)
+    {
+      return res.status(404).json({ message: "Task not found" })
+    }
+    return res.status(200).json({message:"Task deleted successfully"});
+  } catch (error)
+  {
+    console.log(error)
+    return res.status(500).json({ message: "Server error" });
+
+  }
+};
 
 const HistoryTasks = async (req, res) => {
   try {
@@ -200,4 +218,4 @@ cron.schedule('0 0 * * *', async () =>
     }
 })
 
-module.exports = {AddTask,updateTask, allTasks,SingleTask, HistoryTasks}
+module.exports = {AddTask,updateTask, allTasks, SingleTask, deleteTask, HistoryTasks}

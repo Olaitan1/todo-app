@@ -78,7 +78,7 @@ const GeneratePassword = async (password ,salt) => {
 };
 const GenerateToken = async (payload) =>
 {
-  return jwt.sign(payload,  appSecret, {expiresIn: '1h'})   
+  return jwt.sign(payload,  appSecret, {expiresIn: '1d'})   
 }
 
  const loginSchema = Joi.object().keys({

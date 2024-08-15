@@ -41,7 +41,7 @@ const updateTask = async (req, res) => {
     const task = await Task.findById(taskId);
 
     if (!task) {
-      return res.status(404).json("Task not found");
+      return res.status(404).json({ message: "Task not found" });
     }
 
     if (name) task.name = name;
@@ -51,22 +51,7 @@ const updateTask = async (req, res) => {
     if (reminder) task.reminder = reminder;
     if (status) task.status = status;
 
-  
     await task.save();
-
-    
-    if (status === "completed") {
-      const completedTask = new History({
-        description: task.description,
-        completedAt: new Date(),
-      });
-      await completedTask.save();
-      await Task.findByIdAndDelete(taskId);
-
-      return res.status(200).json({
-        message: "Task completed and has been moved to history",
-      });
-    }
 
     res.status(200).json({
       message: "Task updated successfully",
@@ -79,6 +64,7 @@ const updateTask = async (req, res) => {
     });
   }
 };
+
 
 const SingleTask = async (req, res) =>
 {

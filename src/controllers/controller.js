@@ -7,6 +7,7 @@ const cron = require('node-cron')
 
 const AddTask = async (req, res) => {
   const { name, priority, description, dueDate, reminder, status } = req.body;
+  const userId = req.user._id; 
 
   const newTask = new Task({
     name,
@@ -15,6 +16,7 @@ const AddTask = async (req, res) => {
     dueDate,
     reminder,
     status,
+    user: userId, 
   });
 
   try {
@@ -33,15 +35,21 @@ const AddTask = async (req, res) => {
 };
 
 
+
 const updateTask = async (req, res) => {
   const { taskId } = req.params;
   const { name, priority, description, dueDate, reminder, status } = req.body;
+  const userId = req.user._id; 
 
   try {
-    const task = await Task.findById(taskId);
-
+    const task = await Task.findOne({ _id: taskId, user: userId }); 
+    
     if (!task) {
-      return res.status(404).json({ message: "Task not found" });
+      return res
+        .status(404)
+        .json({
+          message: "Task not found or you're not authorized to update it",
+        });
     }
 
     if (name) task.name = name;
@@ -66,43 +74,52 @@ const updateTask = async (req, res) => {
 };
 
 
-const SingleTask = async (req, res) =>
-{
-  try
-  {
-    const { taskId } = req.params;
-    const task = await Task.findById(taskId);
- 
 
+const SingleTask = async (req, res) => {
+  const { taskId } = req.params;
+  const userId = req.user._id; 
+  
+  try {
+    const task = await Task.findOne({ _id: taskId, user: userId }); 
+    
     if (!task) {
-      return res.status(404).json({ message: "Task not found" }); 
+      return res
+        .status(404)
+        .json({
+          message: "Task not found or you're not authorized to view it",
+        });
     }
+
     return res.status(200).json(task);
-  } catch (error)
-  {
+  } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Server error" });
   }
 };
 
-const deleteTask = async (req, res) =>
-{
-  try
-  {
-    const { taskId } = req.params
-    const task = await Task.findByIdAndDelete(taskId);
-    if (!task)
-    {
-      return res.status(404).json({ message: "Task not found" })
-    }
-    return res.status(200).json({message:"Task deleted successfully"});
-  } catch (error)
-  {
-    console.log(error)
-    return res.status(500).json({ message: "Server error" });
 
+const deleteTask = async (req, res) => {
+  const { taskId } = req.params;
+  const userId = req.user._id; 
+  
+  try {
+    const task = await Task.findOneAndDelete({ _id: taskId, user: userId }); 
+    
+    if (!task) {
+      return res
+        .status(404)
+        .json({
+          message: "Task not found or you're not authorized to delete it",
+        });
+    }
+
+    return res.status(200).json({ message: "Task deleted successfully" });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Server error" });
   }
 };
+
 
 const HistoryTasks = async (req, res) => {
   try {
@@ -156,12 +173,40 @@ const HistoryTasks = async (req, res) => {
 // };
 
 
-const allTasks = async (req, res) =>
-{
+// const allTasks = async (req, res) =>
+// {
+//   try {
+//     const { status, priority } = req.query;
+
+//     let filter = {};
+//     if (status) {
+//       filter.status = status;
+//     }
+//     if (priority) {
+//       filter.priority = priority;
+//     }
+
+//     const tasks = await Task.find(filter);
+
+//     res.status(200).json({
+//       success: true,
+//       data: tasks,
+//     });
+//   } catch (error) {
+//     console.error("Error retrieving tasks:", error);
+//     res.status(500).json({
+//       success: false,
+//       message: "Internal server error",
+//     });
+//   }
+// };
+
+const allTasks = async (req, res) => {
   try {
     const { status, priority } = req.query;
-
-    let filter = {};
+    const userId = req.user._id; 
+   
+    let filter = { user: userId };
     if (status) {
       filter.status = status;
     }
@@ -183,6 +228,7 @@ const allTasks = async (req, res) =>
     });
   }
 };
+
 
 cron.schedule('0 0 * * *', async () =>
 {

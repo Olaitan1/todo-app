@@ -22,7 +22,7 @@ const transport = nodemailer.createTransport({
     const response = await transport.sendMail({
       from: FromAdminMail,
       to,
-      subject: userSubject,
+      subject,
       html,
     });
     return response;
